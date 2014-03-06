@@ -11,7 +11,7 @@
   },
   "scripts" : {
     "start": "forever start -c node app.js",
-    "test": "mocha --timeout 5000 --report list"
+    "test": "mocha --timeout 5000 --reporter list"
   },
   "engines": {
     "node": "0.10.x"
