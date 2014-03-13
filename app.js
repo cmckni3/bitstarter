@@ -3,12 +3,12 @@ var app = express();
 var fs = require('fs');
 app.use(express.logger());
 
-var async = require('async')
-  , express = require('express')
-  , fs = require('fs')
-  , http = require('http')
-  , https = require('https')
-  , db = require('./models');
+var async = require('async');
+var express = require('express');
+var fs = require('fs');
+var http = require('http');
+var https = require('https');
+var db = require('./models');;
 
 var app = express();
 app.set('views', __dirname + '/views');
@@ -35,6 +35,36 @@ app.get('/orders', function(request, response) {
     response.send("error retrieving orders");
   });
 });
+
+// add order to the database if it doesn't already exist
+var addOrder = function(order_obj, callback) {
+  var order = order_obj.order; // order json from coinbase
+  if (order.status !== "completed") {
+    // only add completed orders
+    callback();
+  } else {
+    var Order = global.db.Order;
+    // find if order has already been added to our database
+    Order.find({where: {coinbase_id: order.id}}).success(function(order_instance) {
+      if (order_instance) {
+        // order already exists, do nothing
+        callback();
+      } else {
+        // build instance and save
+          var new_order_instance = Order.build({
+          coinbase_id: order.id,
+          amount: order.total_btc.cents / 100000000, // convert satoshis to BTC
+          time: order.created_at
+        });
+          new_order_instance.save().success(function() {
+          callback();
+        }).error(function(err) {
+          callback(err);
+        });
+      }
+    });
+  }
+};
 
 // Hit this URL while on example.com/orders to refresh
 app.get('/refresh_orders', function(request, response) {
@@ -82,34 +112,4 @@ db.sequelize.sync().complete(function(err) {
     });
   }
 });
-
-// add order to the database if it doesn't already exist
-var addOrder = function(order_obj, callback) {
-  var order = order_obj.order; // order json from coinbase
-  if (order.status != "completed") {
-    // only add completed orders
-    callback();
-  } else {
-    var Order = global.db.Order;
-    // find if order has already been added to our database
-    Order.find({where: {coinbase_id: order.id}}).success(function(order_instance) {
-      if (order_instance) {
-        // order already exists, do nothing
-        callback();
-      } else {
-        // build instance and save
-          var new_order_instance = Order.build({
-          coinbase_id: order.id,
-          amount: order.total_btc.cents / 100000000, // convert satoshis to BTC
-          time: order.created_at
-        });
-          new_order_instance.save().success(function() {
-          callback();
-        }).error(function(err) {
-          callback(err);
-        });
-      }
-    });
-  }
-};
 
