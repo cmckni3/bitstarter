@@ -8,7 +8,7 @@ var express = require('express');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
-var db = require('./models');;
+var db = require('./models');
 
 var app = express();
 app.set('views', __dirname + '/views');
