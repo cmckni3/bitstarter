@@ -1,7 +1,8 @@
 var express = require("express");
 var app = express();
 var fs = require('fs');
-app.use(express.logger());
+var morgan = require('morgan');
+app.use(morgan('combined'));
 
 var async = require('async');
 var express = require('express');
@@ -23,14 +24,14 @@ app.get('/', function(request, response) {
 
 // Render example.com/orders
 app.get('/orders', function(request, response) {
-  global.db.Order.findAll().success(function(orders) {
+  global.db.Order.findAll().then(function(orders) {
     var orders_json = [];
     orders.forEach(function(order) {
       orders_json.push({id: order.coinbase_id, amount: order.amount, time: order.time});
     });
     // Uses views/orders.ejs
     response.render("orders", {orders: orders_json});
-  }).error(function(err) {
+  }, function(err) {
     console.log(err);
     response.send("error retrieving orders");
   });
@@ -45,7 +46,7 @@ var addOrder = function(order_obj, callback) {
   } else {
     var Order = global.db.Order;
     // find if order has already been added to our database
-    Order.find({where: {coinbase_id: order.id}}).success(function(order_instance) {
+    Order.find({where: {coinbase_id: order.id}}).then(function(order_instance) {
       if (order_instance) {
         // order already exists, do nothing
         callback();
@@ -56,9 +57,9 @@ var addOrder = function(order_obj, callback) {
           amount: order.total_btc.cents / 100000000, // convert satoshis to BTC
           time: order.created_at
         });
-          new_order_instance.save().success(function() {
+          new_order_instance.save().then(function() {
           callback();
-        }).error(function(err) {
+        }, function(err) {
           callback(err);
         });
       }
