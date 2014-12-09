@@ -21,11 +21,11 @@ References:
    - https://developer.mozilla.org/en-US/docs/JSON#JSON_in_Firefox_2
 */
 
-var fs = require('fs');
-var program = require('commander');
-var cheerio = require('cheerio');
-var rest    = require('restler');
-var HTMLFILE_DEFAULT = "index.html";
+var fs                 = require('fs');
+var program            = require('commander');
+var cheerio            = require('cheerio');
+var rest               = require('restler');
+var HTMLFILE_DEFAULT   = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
 
 var assertFileExists = function(infile) {
@@ -45,19 +45,23 @@ var loadChecks = function(checksfile) {
     return JSON.parse(fs.readFileSync(checksfile));
 };
 
-var runChecks = function($, checksfile){
+var runChecks = function(html, checksfile){
   var checks = loadChecks(checksfile).sort();
   var out = {};
   for(var ii in checks) {
-      var present = $(checks[ii]).length > 0;
+      var present = html(checks[ii]).length > 0;
       out[checks[ii]] = present;
   }
   return out;
 };
 
 var checkHtmlFile = function(htmlfile, checksfile) {
-    $ = cheerioHtmlFile(htmlfile);
-    return runChecks($, checksfile);
+    html = cheerioHtmlFile(htmlfile);
+    return runChecks(html, checksfile);
+};
+
+var checkToConsole = function(out){
+  console.log(JSON.stringify(out, null, 4));
 };
 
 var checkUrl = function(url, checksfile){
@@ -74,17 +78,13 @@ var checkUrl = function(url, checksfile){
   });
 };
 
-var checkToConsole = function(out){
-  console.log(JSON.stringify(out, null, 4));
-};
-
 var clone = function(fn) {
     // Workaround for commander.js issue.
     // http://stackoverflow.com/a/6772648
     return fn.bind({});
 };
 
-if(require.main == module) {
+if(require.main === module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
