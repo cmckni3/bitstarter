@@ -1,8 +1,6 @@
 var express = require("express");
-var app = express();
 var fs = require('fs');
 var morgan = require('morgan');
-app.use(morgan('combined'));
 
 var async = require('async');
 var http = require('http');
@@ -13,6 +11,8 @@ var app = express();
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || 8080);
+
+app.use(morgan('combined'));
 
 // Render homepage (note trailing slash): example.com/
 app.get('/', function(request, response) {
