@@ -5,6 +5,12 @@ if (!global.hasOwnProperty('db')) {
     var sq = null;
     var fs = require('fs');
     var PGPASS_FILE = appdir + '/.pgpass';
+    var config = null;
+    var host = null;
+    var port = null;
+    var dbname = null;
+    var user = null;
+    var password = null;
     if (process.env.DATABASE_URL) {
         /* Remote database
            Do `heroku config` for details. We will be parsing a connection
@@ -14,12 +20,12 @@ if (!global.hasOwnProperty('db')) {
         */
         var pgregex = /postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/;
         var match = process.env.DATABASE_URL.match(pgregex);
-        var user = match[1];
-        var password = match[2];
-        var host = match[3];
-        var port = match[4];
-        var dbname = match[5];
-        var config =  {
+        user = match[1];
+        password = match[2];
+        host = match[3];
+        port = match[4];
+        dbname = match[5];
+        config =  {
             dialect:  'postgres',
             protocol: 'postgres',
             port:     port,
@@ -32,18 +38,18 @@ if (!global.hasOwnProperty('db')) {
            We parse the .pgpass file for the connection string parameters.
         */
         var pgtokens = fs.readFileSync(PGPASS_FILE).toString().split(':');
-        var host = pgtokens[0];
-        var port = pgtokens[1];
-        var dbname = pgtokens[2];
-        var user = pgtokens[3];
-        var password = pgtokens[4];
-        var config =  {
+        host = pgtokens[0];
+        port = pgtokens[1];
+        dbname = pgtokens[2];
+        user = pgtokens[3];
+        password = pgtokens[4];
+        config =  {
             dialect:  'postgres',
             protocol: 'postgres',
             port:     port,
             host:     host,
         };
-        var sq = new Sequelize(dbname, user, password, config);
+        sq = new Sequelize(dbname, user, password, config);
     }
     global.db = {
         Sequelize: Sequelize,
