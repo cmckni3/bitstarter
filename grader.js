@@ -49,8 +49,11 @@ var runChecks = function(html, checksfile){
   var checks = loadChecks(checksfile).sort();
   var out = {};
   for(var ii in checks) {
-      var present = html(checks[ii]).length > 0;
-      out[checks[ii]] = present;
+      if (out.hasOwnProperty(checks[ii]))
+      {
+          var present = html(checks[ii]).length > 0;
+          out[checks[ii]] = present;
+      }
   }
   return out;
 };
