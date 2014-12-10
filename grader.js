@@ -68,7 +68,7 @@ var checkUrl = function(url, checksfile){
   rest.get(url).on('complete', function(result, response){
     if (result instanceof Error)
     {
-      console.log('Error: ', response.message)
+      console.log('Error: ', response.message);
     }
     else
     {
