@@ -5,8 +5,6 @@ var morgan = require('morgan');
 app.use(morgan('combined'));
 
 var async = require('async');
-var express = require('express');
-var fs = require('fs');
 var http = require('http');
 var https = require('https');
 var db = require('./models');
@@ -25,12 +23,12 @@ app.get('/', function(request, response) {
 // Render example.com/orders
 app.get('/orders', function(request, response) {
   global.db.Order.findAll().then(function(orders) {
-    var orders_json = [];
+    var ordersJson = [];
     orders.forEach(function(order) {
-      orders_json.push({id: order.coinbase_id, amount: order.amount, time: order.time});
+      ordersJson.push({id: order.coinbase_id, amount: order.amount, time: order.time});
     });
     // Uses views/orders.ejs
-    response.render("orders", {orders: orders_json});
+    response.render("orders", {orders: ordersJson});
   }, function(err) {
     console.log(err);
     response.send("error retrieving orders");
@@ -38,26 +36,26 @@ app.get('/orders', function(request, response) {
 });
 
 // add order to the database if it doesn't already exist
-var addOrder = function(order_obj, callback) {
-  var order = order_obj.order; // order json from coinbase
+var addOrder = function(orderObj, callback) {
+  var order = orderObj.order; // order json from coinbase
   if (order.status !== "completed") {
     // only add completed orders
     callback();
   } else {
     var Order = global.db.Order;
     // find if order has already been added to our database
-    Order.find({where: {coinbase_id: order.id}}).then(function(order_instance) {
-      if (order_instance) {
+    Order.find({where: {coinbase_id: order.id}}).then(function(orderInstance) {
+      if (orderInstance) {
         // order already exists, do nothing
         callback();
       } else {
         // build instance and save
-          var new_order_instance = Order.build({
+          var newOrderInstance = Order.build({
           coinbase_id: order.id,
           amount: order.total_btc.cents / 100000000, // convert satoshis to BTC
           time: order.created_at
         });
-          new_order_instance.save().then(function() {
+          newOrderInstance.save().then(function() {
           callback();
         }, function(err) {
           callback(err);
@@ -74,13 +72,13 @@ app.get('/refresh_orders', function(request, response) {
     res.on('data', function(chunk) {body += chunk;});
     res.on('end', function() {
       try {
-        var orders_json = JSON.parse(body);
-        if (orders_json.error) {
-          response.send(orders_json.error);
+        var ordersJson = JSON.parse(body);
+        if (ordersJson.error) {
+          response.send(ordersJson.error);
           return;
         }
         // add each order asynchronously
-        async.forEach(orders_json.orders, addOrder, function(err) {
+        async.forEach(ordersJson.orders, addOrder, function(err) {
           if (err) {
             console.log(err);
             response.send("error adding orders");
