@@ -2,6 +2,10 @@
   "name": "bitstarter",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "start": "forever start -c node app.js",
+    "test": "mocha --timeout 5000 --reporter list"
+  },
   "dependencies": {
     "async": "0.9.x",
     "ejs": "1.x",
@@ -10,9 +14,8 @@
     "pg": "3.x",
     "sequelize": "2.0.0-rc1"
   },
-  "scripts": {
-    "start": "forever start -c node app.js",
-    "test": "mocha --timeout 5000 --reporter list"
+  "devDependencies": {
+    "mocha": "^3.5.0"
   },
   "engines": {
     "node": "0.10.x"
