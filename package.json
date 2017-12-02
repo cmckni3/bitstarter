@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "async": "0.9.x",
-    "ejs": "1.x",
+    "ejs": "^2.5.7",
     "express": "4.x",
     "morgan": "1.x",
     "pg": "3.x",
