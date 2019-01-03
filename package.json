@@ -22,7 +22,8 @@
   },
   "greenkeeper": {
     "ignore": [
-      "sequelize"
+      "sequelize",
+      "mocha"
     ]
   }
 }
