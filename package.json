@@ -19,11 +19,5 @@
   },
   "engines": {
     "node": ">= 4"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "sequelize",
-      "mocha"
-    ]
   }
 }
