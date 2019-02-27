@@ -17,14 +17,14 @@
 sudo apt-get install -y postgresql postgresql-contrib
 
 # Symlink into home.
-# Note the use of backticks, PWD, and the -t flag.
-ln -sf `ls $PWD/.pgpass` -t $HOME
+# Note the use of PWD and the -t flag.
+ln -sf $(ls $PWD/.pgpass) -t $HOME
 chmod 600 $HOME"/.pgpass"
 
 # Extract variables from the .pgpass file
 # stackoverflow.com/a/5257398
 # goo.gl/X51Mwz
-PGPASS=`cat .pgpass`
+PGPASS=$(cat .pgpass)
 TOKS=(${PGPASS//:/ })
 PG_HOST=${TOKS[0]}
 PG_PORT=${TOKS[1]}
