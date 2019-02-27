@@ -59,7 +59,7 @@ var runChecks = function(html, checksfile){
 };
 
 var checkHtmlFile = function(htmlfile, checksfile) {
-    html = cheerioHtmlFile(htmlfile);
+    var html = cheerioHtmlFile(htmlfile);
     return runChecks(html, checksfile);
 };
 
